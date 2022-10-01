@@ -7,3 +7,6 @@
     </picture>
   </a>
 </p>
+
+This project introduces the concepts of multi-threading and mutexes.
+
