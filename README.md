@@ -25,8 +25,14 @@
       - [pthread_mutex_destroy](#pthread_mutex_destroy)
       - [pthread_mutex_lock](#pthread_mutex_lock)
       - [pthread_mutex_unlock](#pthread_mutex_unlock)
-      - [Return value:](#return-value)
   - [Implementation](#implementation)
+    - [Input and error handling](#input-and-error-handling)
+    - [Bringing the Philosophers to Life](#bringing-the-philosophers-to-life)
+    - [Monitoring](#monitoring)
+    - [Avoiding Data Races](#avoiding-data-races)
+  - [Installation](#installation)
+    - [Clone the repository:](#clone-the-repository)
+    - [Some commands to try:](#some-commands-to-try)
 
 
 ## The Challenge
@@ -98,7 +104,7 @@ int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routin
 ```C
 int pthread_detach(pthread_t thread);
 ```
-*Indicate to the implementation that storage for the thread can be reclaimed when that thread terminates.*
+*Indicates to the implementation that storage for the thread can be reclaimed when that thread terminates.*
 
 - `pthread_t thread`: the target thread.
 
@@ -118,7 +124,7 @@ int pthread_join(pthread_t thread, void **value_ptr);
 int pthread_mutex_init(pthread_mutex_t *mutex,  const pthread_mutexattr_t *attr);
 ```
 
-*Creates a new mutex*
+*Creates a new mutex.*
 
 - `pthread_mutex_t *mutex`: the mutex object, contains the mutex ID.
 -  `const pthread_mutexattr_t *attr`: attributes to assign to the mutex.  If `NULL`, the default attributes are used.
@@ -129,7 +135,7 @@ int pthread_mutex_init(pthread_mutex_t *mutex,  const pthread_mutexattr_t *attr)
 int      pthread_mutex_destroy(pthread_mutex_t *mutex);
 ```
 
-*Frees the resources allocated*
+*Frees the resources allocated to the mutex.*
 
 - `pthread_mutex_t *mutex`: The target mutex.
 
@@ -138,7 +144,7 @@ int      pthread_mutex_destroy(pthread_mutex_t *mutex);
 ```C
 int pthread_mutex_lock(pthread_mutex_t *mutex);
 ```
-*Locks the mutex.  If the mutex is already locked, the calling thread will block until the mutex becomes avaiable.*
+*Locks the mutex.  If the mutex is already locked, the calling thread will block until the mutex becomes available.*
 
 - `pthread_mutex_t *mutex`: The target mutex.
 
@@ -153,9 +159,65 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 ---
 
-#### Return value:
+**Return value:**
+<br>
 All of the above functions implement return values in the same way.
 
  If successful, the functions return zero, else an error number will be returned.
 
 ## Implementation
+### Input and error handling
+As always, the first thing the program does is parse the input and check for input errors.  
+
+The errors include:
+- The program only accepts four or five arguments.
+- All of the arguments must be able to be converted to an `int`.
+- There cannot be less than one philosopher.
+
+If no errors are found, the input is then stored in a data struct `t_tools`.  An array of `t_philo`'s are created, each with its own `pthread_t` (thread) variable, and an array of `pthread_mutex_t` (mutexes) for each fork, both of which are the size of `n` , where `n` is the number of philosophers.  Both arrays are also stored in `t_tools`.  I choose to use an array of structs instead of a linked list as it allows for easy access to each philosopher without looping through a list, and as the number of philosophers is constant, it means the array can be malloc'ed at the beginning.  The `t_philo` struct also stores the time of its last meal, the amount of times it has eaten, and a pointer to the `t_tools` struct.  This means that each philosopher has access to the variables allocated by the input as well as the array of fork mutexes.
+
+### Bringing the Philosophers to Life
+When `pthread_create` is called, each thread it creates executes a function.  In my program that function is called `life`, which loops through each of the different phases; **eat**, **think**, and **sleep**. The most complicated of which is the **eating** phase.  The philosopher first has to determine which fork lies to their left and right, and then wait until each fork becomes available by attempting to unlock the forks respective mutex.  They **think** while they wait. Only when they have two forks they start eating. Once finished they simply unlock both mutexes.  They go to **sleep**, after which the cycle begins again. The cycle stops either if a philosopher has died or if the philosophers have eaten the set amount of times.
+
+To avoid a **deadlock**, where all philosophers grab one fork each and none of them can eat, the program starts by staggering the philosophers. Philosophers with an even `id` grab a fork straight away, while philosophers with an uneven `id` wait for a short amount of time before they can start.
+
+### Monitoring
+While the parent thread waits for the rest of the threads to finish (I used `pthread_join()`), it monitors each philosopher.  The monitoring checks each philosopher for wether the last meal time exceeds the time to die.  If this is evaluated to true, the monitoring logs the death of the philosopher and ends the simulation.
+
+### Avoiding Data Races
+This was by far the most challenging part of creating this program.  There are two situations caused by the above implementation that could cause data races.  The first is that as monitoring is constantly checking the last meal time, each philosopher is also changing this variable, causing the possibility that both threads could be trying to access the variable at the same time.  The second occurs when a philosopher dies. The monitoring sets a boolean to true, which is check by each philosopher life cycle as well as the function that logs to the terminal.  When the boolean is true, both functions do not execute.  Again, this information is being accessed potentially simultaneously by multiple threads. To solve this problem, I implemented two more mutexes.  One for the last meal time, and the other for the end boolean.  Both have to helper functions to read and write, respectively.
+
+
+## Installation
+### Clone the repository:
+``` 
+git clone https://github.com/maiadegraaf/philo.git
+cd philo
+make
+```
+
+### Some commands to try:
+The philosopher should not eat and should die:
+```sh
+./philo 1 800 200 200.
+```
+No philosopher should die and the program should continue indefinitely:
+
+```sh
+./philo 5 800 200 200
+```
+No philosopher should die and the simulation should stop when every philosopher has eaten at least 7 times:
+```sh
+./philo 5 800 200 200 7
+```
+No philosopher should die and the program should continue indefinitely:
+```sh
+./philo 4 410 200 200
+```
+
+One philosopher should die:
+```sh
+./philo 4 310 200 100
+```
+
+*Keep in mind that only slower computers this program might operate differently and a philosopher could die when they're not supposed.*
