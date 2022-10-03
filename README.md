@@ -157,9 +157,8 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 **Return value:**
 <br>
-All of the above functions implement return values in the same way.
-
- If successful, the functions return zero, else an error number will be returned.
+All of the above functions implement return values in the same way.<br>
+If successful, the functions return zero, else an error number will be returned.
 
 ## Implementation
 ### Input and error handling
@@ -216,4 +215,4 @@ One philosopher should die:
 ./philo 4 310 200 100
 ```
 
-*Keep in mind that only slower computers this program might operate differently and a philosopher could die when they're not supposed.*
+*Keep in mind that on slower computers this program might operate differently and a philosopher could die when they're not supposed to.*
