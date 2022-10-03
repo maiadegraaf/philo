@@ -18,7 +18,6 @@
     - [Expected Output](#expected-output)
   - [A Brief Guide to Threads and Mutexes](#a-brief-guide-to-threads-and-mutexes)
       - [pthread_create](#pthread_create)
-  - [- `void *arg`: the argument to pass to the above function.](#--void-arg-the-argument-to-pass-to-the-above-function)
       - [pthread_detach](#pthread_detach)
       - [pthread_join](#pthread_join)
       - [pthread_mutex_init](#pthread_mutex_init)
@@ -31,12 +30,10 @@
     - [Monitoring](#monitoring)
     - [Avoiding Data Races](#avoiding-data-races)
   - [Installation](#installation)
-    - [Clone the repository:](#clone-the-repository)
-    - [Some commands to try:](#some-commands-to-try)
 
 
 ## The Challenge
-This project is based on the well established [Dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).  It is set up as follows:
+This project is based on the well established [Dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).  It is set up as follows and demonstrated in the illustration above:
 - One or more philosopher sit at a round table, at the center of which is a bowl of spaghetti.
 - There are as many forks as philosophers, one between each philosopher.  A fork can only be used by the philosophers sitting directly next to it.
 - The philosophers can only eat when they are holding a fork in each hand.  Once they have finished eating they put down the forks.
