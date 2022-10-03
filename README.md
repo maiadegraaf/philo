@@ -25,6 +25,8 @@
       - [pthread_mutex_destroy](#pthread_mutex_destroy)
       - [pthread_mutex_lock](#pthread_mutex_lock)
       - [pthread_mutex_unlock](#pthread_mutex_unlock)
+      - [Return value:](#return-value)
+  - [Implementation](#implementation)
 
 
 ## The Challenge
@@ -53,6 +55,7 @@ The program runs with the following arguments:<br>
 | `time_to_eat`\*         | The length of time a philosopher spends eating.                                                                                                                |
 | `time_to_sleep`\*       | The length of time a philosopher spends sleeping.                                                                                                              |
 | [optional]<br>`num_eat` | The amount of a times each philosopher must eat before the simulation ends.  If not specified, the simulation only stops when a philosopher dies.              |
+
 *\*measured in milliseconds*
 ### Expected Output
 The program logs the philosophers actions to the terminal, where `[time_stamp]` is the time since the start of the simulation, and `[x]` is the philosophers number.:
@@ -93,13 +96,18 @@ int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routin
 ---
 #### pthread_detach
 ```C
+int pthread_detach(pthread_t thread);
 ```
+*Indicate to the implementation that storage for the thread can be reclaimed when that thread terminates.*
+
+- `pthread_t thread`: the target thread.
+
 --- 
 #### pthread_join
 ```C
 int pthread_join(pthread_t thread, void **value_ptr);
 ```
-*Suspends execution of the calling thread until the target thread terminates unless the target thread has already terminated.*
+*Waits for the thread to terminate, and optionally obtain its return value.*
 
 - `pthread_t thread`: the target thread.
 - `void **value_ptr`: if not `NULL`, where the value passed to `pthread_exit()` by the terminating thread is stored.
@@ -107,16 +115,47 @@ int pthread_join(pthread_t thread, void **value_ptr);
 --- 
 #### pthread_mutex_init
 ```C
+int pthread_mutex_init(pthread_mutex_t *mutex,  const pthread_mutexattr_t *attr);
 ```
+
+*Creates a new mutex*
+
+- `pthread_mutex_t *mutex`: the mutex object, contains the mutex ID.
+-  `const pthread_mutexattr_t *attr`: attributes to assign to the mutex.  If `NULL`, the default attributes are used.
+
 --- 
 #### pthread_mutex_destroy
 ```C
+int      pthread_mutex_destroy(pthread_mutex_t *mutex);
 ```
+
+*Frees the resources allocated*
+
+- `pthread_mutex_t *mutex`: The target mutex.
+
 --- 
 #### pthread_mutex_lock
 ```C
+int pthread_mutex_lock(pthread_mutex_t *mutex);
 ```
+*Locks the mutex.  If the mutex is already locked, the calling thread will block until the mutex becomes avaiable.*
+
+- `pthread_mutex_t *mutex`: The target mutex.
+
 --- 
 #### pthread_mutex_unlock
 ```C
+int pthread_mutex_unlock(pthread_mutex_t *mutex);
 ```
+*If the current thread holds the lock on the mutex, this function will unlock it.*
+
+- `pthread_mutex_t *mutex`: The target mutex.
+
+---
+
+#### Return value:
+All of the above functions implement return values in the same way.
+
+ If successful, the functions return zero, else an error number will be returned.
+
+## Implementation
