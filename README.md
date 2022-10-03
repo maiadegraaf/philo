@@ -11,25 +11,24 @@
 *This project introduces the concepts of multi-threading and mutexes.*
 
 ## Table of Contents
-- [philo](#philo)
-  - [Table of Contents](#table-of-contents)
-  - [The Challenge](#the-challenge)
-    - [Expected Input](#expected-input)
-    - [Expected Output](#expected-output)
-  - [A Brief Guide to Threads and Mutexes](#a-brief-guide-to-threads-and-mutexes)
-      - [pthread_create](#pthread_create)
-      - [pthread_detach](#pthread_detach)
-      - [pthread_join](#pthread_join)
-      - [pthread_mutex_init](#pthread_mutex_init)
-      - [pthread_mutex_destroy](#pthread_mutex_destroy)
-      - [pthread_mutex_lock](#pthread_mutex_lock)
-      - [pthread_mutex_unlock](#pthread_mutex_unlock)
-  - [Implementation](#implementation)
-    - [Input and error handling](#input-and-error-handling)
-    - [Bringing the Philosophers to Life](#bringing-the-philosophers-to-life)
-    - [Monitoring](#monitoring)
-    - [Avoiding Data Races](#avoiding-data-races)
-  - [Installation](#installation)
+
+- [The Challenge](#the-challenge)
+  - [Expected Input](#expected-input)
+  - [Expected Output](#expected-output)
+- [A Brief Guide to Threads and Mutexes](#a-brief-guide-to-threads-and-mutexes)
+    - [pthread_create](#pthread_create)
+    - [pthread_detach](#pthread_detach)
+    - [pthread_join](#pthread_join)
+    - [pthread_mutex_init](#pthread_mutex_init)
+    - [pthread_mutex_destroy](#pthread_mutex_destroy)
+    - [pthread_mutex_lock](#pthread_mutex_lock)
+    - [pthread_mutex_unlock](#pthread_mutex_unlock)
+- [Implementation](#implementation)
+  - [Input and error handling](#input-and-error-handling)
+  - [Bringing the Philosophers to Life](#bringing-the-philosophers-to-life)
+  - [Monitoring](#monitoring)
+  - [Avoiding Data Races](#avoiding-data-races)
+- [Installation](#installation)
 
 
 ## The Challenge
